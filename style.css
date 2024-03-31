@@ -1,0 +1,57 @@
+body {
+  margin: 0;
+  background: #313338;
+}
+
+a {color: #06768d/*#007aa5*/; font-weight: bold; text-decoration: none;}
+
+a.timestamp {color: #777; font-weight: normal;}
+
+p { margin: 0;}
+
+.message {
+  padding: 5px;
+}
+
+.message:hover {
+  background: #2b2d31;
+}
+
+.reply {
+  margin-left: 1em;
+}
+
+.reply .message {
+  border-left: 2px solid #555; padding-left: .5em;
+}
+
+.avatar { width: 32px; height: 32px; border-radius: 100%; float: left; margin-right: 5px; margin-top: 5px; object-fit: cover;}
+
+.avatarbig { width: 150px; height: 150px; object-fit: cover; border-radius: 100%;}
+
+#scroller {
+  margin: 0;
+  width: 100%;
+  color: #f5f5f5;
+  font-family: 'Source Sans Pro';
+  margin-top: 45px;
+  margin-bottom: 46px;
+}
+
+button { border: none; background: #232428; padding: 10px; margin-right: 5px; color: #ccc;}
+
+button:hover {background: #2b2d31; cursor: pointer;}
+
+#navbar {
+  position: fixed; top: 0; width: 100%;
+  background: #232428;
+}
+
+#prompt {
+  position: fixed; bottom: 0; width: 100%;
+}
+
+input, textarea { width: 100%; border: 1px solid #232428; background: #383a40; font-family: 'Source Sans Pro'; color: #f5f5f5; padding: 10px; font-size: 1em;}
+
+
+input:focus { outline: none; border: 1px solid #666;}
