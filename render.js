@@ -20,7 +20,16 @@ export const render = async (msg) => {
   }
 
   if (latest.image) {
-    img.src = latest.image
+    if (latest.image.length > 44) {
+
+      img.src = latest.image
+    } if (latest.image.length === 44) {
+      const blob = await bogbot.find(latest.image)
+      img.src = blob
+      if (!blob) {
+        trystero.send(latest.image)
+      }
+    }
   }
 
   const content = h('div', {id: msg.data})

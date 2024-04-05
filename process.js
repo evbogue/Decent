@@ -31,6 +31,7 @@ export const process = async (msg, id) => {
     const hash = await bogbot.make(msg.payload)
     const blobDiv = document.getElementById(hash)
     if (blobDiv) {
+      console.log(blobDiv)
       blobDiv.innerHTML = await markdown(msg.payload)
     }
   }
@@ -60,10 +61,16 @@ export const process = async (msg, id) => {
         if (msg.image) {
           if (latest.image != msg.image) {
             latest.image = msg.image
-            setTimeout(() => {
+            setTimeout(async () => {
               const imagesOnScreen = document.getElementsByClassName('image' + opened.author)
               for (const image of imagesOnScreen) {
-                image.src = latest.image
+                if (latest.image.length > 44) {
+                  image.src = latest.image
+                } 
+                if (latest.image.length == 44) {
+                  const blob = await bogbot.find(latest.image)
+                  image.src = blob 
+                }
               }
             }, 100)
           }

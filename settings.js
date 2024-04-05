@@ -37,7 +37,7 @@ const uploadButton = h('button', {
 }, ['Upload profile photo'])
 
 const uploader = h('input', {
-  type: 'file', style: 'display: none;', onchange: (e) => {
+  type: 'file', style: 'display: none;', onchange: async (e) => {
     const file = e.srcElement.files[0]
     const reader = new FileReader()
     reader.onloadend = async () => {
@@ -46,7 +46,8 @@ const uploader = h('input', {
       for (const image of imagesOnScreen) {
         image.src = img.src
       }
-      latest.image = img.src
+      const blob = await bogbot.make(img.src)
+      latest.image = blob
       console.log(latest)
       trystero.send(latest)
       await bogbot.saveInfo(pubkey, latest)
