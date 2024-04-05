@@ -6,7 +6,6 @@ import { trystero } from './trystero.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
-  console.log(msg)
   if (msg.length === 44 && !msg.startsWith('{')) {
     const blob = await bogbot.find(msg)
 
@@ -17,7 +16,7 @@ export const process = async (msg, id) => {
 
     const message = await bogbot.query(msg)
 
-    if (message[0]) {
+    if (message && message[0]) {
       const obj = {
         type: 'post',
         payload: message[0].raw,
@@ -105,9 +104,5 @@ export const process = async (msg, id) => {
         window.scrollTo(0, document.body.scrollHeight)
       }, 50)
     }
-
-    const previous = await bogbot.query(opened.previous)
-
-    if (previous && !previous[0]) { trystero.send(opened.previous)}
   }
 }

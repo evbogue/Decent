@@ -8,8 +8,8 @@ import { trystero } from './trystero.js'
 
 export const render = async (msg) => {
   const wrapperDiv = h('div', {id: msg.hash})
-  const link = h('a', {href: '#' + msg.author, classList: 'name' + msg.author}, [msg.author.substring(0, 10)])
   const img = vb(decode(msg.author), 256)
+  const link = h('a', {href: '#' + msg.author, classList: 'name' + msg.author}, [msg.author.substring(0, 10)])
 
   img.classList = 'avatar image' + msg.author
 
@@ -46,7 +46,7 @@ export const render = async (msg) => {
   }
 
   const div = h('div', {classList: 'message'}, [
-    img,
+    h('a', {href: '#' + msg.author}, [img]),
     link,
     ' ',
     h('a', {href: '#' + msg.hash, classList: 'timestamp'}, [human(new Date(msg.timestamp))]),
@@ -57,9 +57,7 @@ export const render = async (msg) => {
 
   const threads = await bogbot.query('?' + msg.hash)
 
-  console.log(threads)
-
-  if (threads[0]) {
+  if (threads && threads[0]) {
     const replyDiv = h('div', {classList: 'reply'})
     wrapperDiv.appendChild(replyDiv)
     threads.forEach(async (item) => {
@@ -71,6 +69,13 @@ export const render = async (msg) => {
     })
   }
 
+  if (msg.previous != msg.hash) {
+    const prev = await bogbot.query(msg.previous)
+    console.log(prev)
+    if (!prev[0]) {
+      trystero.send(msg.previous)
+    }
+  }
 
   return wrapperDiv
 }

@@ -45,7 +45,7 @@ const route = async () => {
   } else {
     const log = await bogbot.query(src)
 
-    if (log) {
+    if (log && log[0]) {
       for (const msg of log) {
         const got = document.getElementById(msg.hash)
         const rendered = await render(msg)

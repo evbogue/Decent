@@ -48,7 +48,6 @@ const uploader = h('input', {
       }
       const blob = await bogbot.make(img.src)
       latest.image = blob
-      console.log(latest)
       trystero.send(latest)
       await bogbot.saveInfo(pubkey, latest)
     }
