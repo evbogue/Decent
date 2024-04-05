@@ -49,6 +49,7 @@ const uploader = h('input', {
       const blob = await bogbot.make(img.src)
       latest.image = blob
       trystero.send(latest)
+      trystero.send({type: 'blob', payload: blob})
       await bogbot.saveInfo(pubkey, latest)
     }
     reader.readAsDataURL(file)
