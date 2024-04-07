@@ -56,7 +56,11 @@ bogbot.publish = async (text) => {
   let previous
 
   const getLatest = await bogbot.getLatest(pubkey)
+
+  console.log(getLatest)
+
   previous = hash
+
   if (getLatest) {
     previous = getLatest.hash
   } else {
@@ -66,7 +70,6 @@ bogbot.publish = async (text) => {
   const next = msg + previous + hash
 
   const sig = encode(nacl.sign(new TextEncoder().encode(next), decode(privkey)))
-
   return pubkey + sig
 }
 
@@ -217,11 +220,6 @@ bogbot.getInfo = async (id) => {
 }
 
 bogbot.saveInfo = async (pubkey, data) => {
-  if (data.payload && data.payload.substring(0, 44) === await bogbot.pubkey()) {
-    data.type = 'latest'
-  } else {
-    data.type = 'post'
-  }
   info.set(pubkey, data)
   await cachekv.put(pubkey, JSON.stringify(data))
 }

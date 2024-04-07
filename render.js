@@ -4,7 +4,7 @@ import {bogbot} from './bogbot.js'
 import {vb} from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { markdown } from './markdown.js'
-import { trystero } from './trystero.js'
+import { gossip } from './connect.js'
 
 export const render = async (msg) => {
   const wrapperDiv = h('div', {id: msg.hash})
@@ -27,7 +27,7 @@ export const render = async (msg) => {
       const blob = await bogbot.find(latest.image)
       img.src = blob
       if (!blob) {
-        trystero.send(latest.image)
+        gossip(latest.image)
       }
     }
   }
@@ -41,7 +41,7 @@ export const render = async (msg) => {
       content.innerHTML = await markdown(blob)
     } else {
       content.textContent = '[NO BLOB]'
-      trystero.send(msg.data)
+      gossip(msg.data)
     }
   }
 
@@ -71,9 +71,9 @@ export const render = async (msg) => {
 
   if (msg.previous != msg.hash) {
     const prev = await bogbot.query(msg.previous)
-    console.log(prev)
-    if (!prev[0]) {
-      trystero.send(msg.previous)
+    if (prev && !prev[0]) {
+      console.log('ASK FOR PREVIOUS')
+      gossip(msg.previous)
     }
   }
 

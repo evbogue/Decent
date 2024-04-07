@@ -2,16 +2,16 @@ import { h } from './lib/h.js'
 import { bogbot } from './bogbot.js'
 import { render } from './render.js'
 import { markdown } from './markdown.js'
-import { trystero } from './trystero.js'
+import { directSend } from './connect.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
   if (msg.length === 44 && !msg.startsWith('{')) {
     const blob = await bogbot.find(msg)
 
-    if (blob) {
+    if (blob && !blob.startsWith('{')) {
       const obj = {type: 'blob', payload: blob}
-      trystero.send(obj)
+      directSend(obj, id)
     }
 
     const message = await bogbot.query(msg)
@@ -22,7 +22,7 @@ export const process = async (msg, id) => {
         payload: message[0].raw,
         blob: await bogbot.find(message[0].data)
       }
-      trystero.send(obj)
+      directSend(obj, id)
     }
   }
 

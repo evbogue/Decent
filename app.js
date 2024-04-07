@@ -3,8 +3,7 @@ import {bogbot} from './bogbot.js'
 import {prompter} from './prompter.js'
 import {render} from './render.js'
 import {settings} from './settings.js'
-import {connect} from './connect.js'
-import { trystero } from './trystero.js'
+import {connect, gossip} from './connect.js'
 
 if (!window.location.hash) { window.location = '#' }
 
@@ -54,10 +53,9 @@ const route = async () => {
           scroller.appendChild(rendered)
         }
       }
-    } else {
-      trystero.send(src)
+    } else if (src.length === 44) {
+      gossip(src)
     }
-
 
     setTimeout(() => {
       window.scrollTo(0, document.body.scrollHeight)
