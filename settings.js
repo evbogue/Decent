@@ -3,7 +3,7 @@ import { bogbot } from './bogbot.js'
 import { decode } from './lib/base64.js'
 import { vb } from './lib/vb.js'
 import { cachekv} from './lib/cachekv.js'
-import { sendLatest } from './connect.js'
+import { sendLatest, directSend } from './connect.js'
 
 const keypair = await bogbot.keypair()
 const pubkey = await bogbot.pubkey()
@@ -46,6 +46,7 @@ const uploader = h('input', {
         image.src = img.src
       }
       const blob = await bogbot.make(img.src)
+      await directSend({type: 'blob', payload: blob})
       latest.image = blob
       await bogbot.saveInfo(pubkey, latest)
       await sendLatest()

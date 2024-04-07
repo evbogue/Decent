@@ -43,35 +43,37 @@ export const process = async (msg, id) => {
       }
       const latest = await bogbot.getInfo(opened.author)
 
-      if (msg.image || msg.name) {
-        if (msg.name) {
-          if (latest.name != msg.name) {
-            console.log('NAME IS NEW')
-            latest.name = msg.name
-            setTimeout(() => {
-              const namesOnScreen = document.getElementsByClassName('name' + opened.author)
-              for (const names of namesOnScreen) {
-                names.textContent = latest.name
-              }
-            }, 100)
+      if (msg.name) {
+        if (latest.name != msg.name) {
+          latest.name = msg.name
+          setTimeout(() => {
+            const namesOnScreen = document.getElementsByClassName('name' + opened.author)
+            for (const names of namesOnScreen) {
+              names.textContent = latest.name
+            }
+          }, 100)
 
-          }
         }
-        if (msg.image) {
-          if (latest.image != msg.image) {
-            latest.image = msg.image
-            setTimeout(async () => {
-              const imagesOnScreen = document.getElementsByClassName('image' + opened.author)
-              for (const image of imagesOnScreen) {
-                if (latest.image.length > 44) {
-                  image.src = latest.image
-                } 
-                if (latest.image.length == 44) {
-                  const blob = await bogbot.find(latest.image)
-                  image.src = blob 
-                }
+      }
+      if (msg.image) {
+        if (latest.image != msg.image) {
+          latest.image = msg.image
+          const imagesOnScreen = document.getElementsByClassName('image' + opened.author)
+          const blerg = await bogbot.find(latest.image)
+          for (const image of imagesOnScreen) {
+            if (latest.image.length > 44) {
+              image.src = latest.image
+            } 
+            if (latest.image.length == 44) {
+              if (blerg) {
+                image.src = blerg
+              } else {
+                setTimeout(async () => {
+                  const tryblobagain = await bogbot.find(latest.image)
+                  if (tryblobagain) {image.src = tryblobagain}
+                }, 500)
               }
-            }, 100)
+            }
           }
         }
       }
@@ -93,11 +95,15 @@ export const process = async (msg, id) => {
 
     const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
 
-    if (shouldWeRender && !alreadyRendered) {
+
+
+    if (shouldWeRender && !alreadyRendered && msg.type === 'latest') {
       scroller.appendChild(rendered)
       setTimeout(() => {
         window.scrollTo(0, document.body.scrollHeight)
       }, 50)
+    } else if (shouldWeRender && !alreadyRendered) {
+      scroller.firstChild.before(rendered)
     }
   }
 }

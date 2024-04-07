@@ -94,7 +94,7 @@ setInterval(async () => {
       cleanUpQueue(hash)
     }
   }
-}, 500)
+}, 50)
 
 // ask random peers for messages one at a time, removing msg from queue if we get it
 export const gossip = async (msg) => {
