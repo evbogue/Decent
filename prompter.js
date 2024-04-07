@@ -12,12 +12,13 @@ export const prompter = async (hash) => {
   let context = ''
   if (hash) { 
     let msg = await bogbot.query(hash)
+
     
     if (msg[0]) {
       msg = msg[0]
       const getReplyPrevious = await bogbot.getInfo(msg.author)
 
-      context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (msg.txt.substring (0, 7) + '...' || msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
+      context = '[' + (getReplyPrevious.name || msg.author.substring(0, 7)) + '](' + msg.author + ') ↳ [' + (msg.hash.substring(0, 7)) + '](' + msg.hash + ') '
     }
   }
   const input = h('input', {
@@ -50,7 +51,7 @@ export const prompter = async (hash) => {
 
       content.innerHTML = await markdown(context + ' ' + input.value)
 
-      const preview = h('div', {classList: 'reply', id: 'preview'}, [
+      const preview = h('div', {id: 'preview'}, [
         h('div', {classList: 'message'}, [
           h('a', {href: '#' + pubkey}, [img]),
           link,
@@ -62,8 +63,11 @@ export const prompter = async (hash) => {
       const get = document.getElementById('preview')
       if (get) {get.remove()}
       if (hash) {
+        preview.classList = 'reply'
         const parentMsg = document.getElementById(hash)
-        parentMsg.appendChild(preview)
+        if (parentMsg) {
+          parentMsg.appendChild(preview)
+        }
       } else {
         const scroller = document.getElementById('scroller')
         scroller.appendChild(preview)
