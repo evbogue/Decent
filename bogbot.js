@@ -57,8 +57,6 @@ bogbot.publish = async (text) => {
 
   const getLatest = await bogbot.getLatest(pubkey)
 
-  console.log(getLatest)
-
   previous = hash
 
   if (getLatest) {
@@ -107,8 +105,6 @@ if (file) {
 
 const sorter = setInterval(async () => {
   if (newData) {
-    console.log('sorting')
-    console.log(arraystore)
     const rawset = new Set()
     for await (const msg of arraystore) {
       rawset.add(msg.raw) 
@@ -124,14 +120,11 @@ const sorter = setInterval(async () => {
     }
     
     newarray.sort((a,b) => a.timestamp - b.timestamp)
-    console.log(newarray)
     arraystore = newarray
     save()
     newData = false
   } 
 }, 1000)
-
-console.log(arraystore)
 
 bogbot.query = async (query) => {
   if (arraystore[0] && !query) { return arraystore }
