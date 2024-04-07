@@ -40,9 +40,9 @@ p { margin: 0;}
   margin-bottom: 46px;
 }
 
-button { border: none; background: #2d2d2d; padding: 10px; margin-right: 5px; color: #ccc;}
+button { border: none; background: #222; padding: 10px; margin-right: 5px; color: #ccc;}
 
-button:hover {background: #222; cursor: pointer;}
+button:hover {background: #2d2d2d; cursor: pointer;}
 
 #navbar {
   position: fixed; top: 0; width: 100%;
