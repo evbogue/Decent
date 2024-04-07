@@ -40,8 +40,6 @@ export const connect = (server) => {
 
 let queue = []
 
-console.log(queue)
-
 const loadFeedsIntoQueue = async () => {
   const feeds = await bogbot.getFeeds()
   queue = queue.concat(feeds)
@@ -54,7 +52,6 @@ let timeout = 10000 * num
 
 setInterval(() => {
   timeout = 1000 * num++
-  console.log(timeout)
   loadFeedsIntoQueue()
 }, timeout)
 
@@ -68,7 +65,6 @@ const cleanUpQueue = async (hash) => {
 
 setInterval(async () => {
   if (queue.length) {
-    console.log(queue)
     const peers = await bogRoom.getPeers()
     const keys = Object.keys(peers)
 
