@@ -18,9 +18,13 @@ export const directSend = (obj, id) => {
   sendBog(obj, id)
 }
 
-export const sendLatest = async (id) => {
+export const sendLatest = async () => {
   const latest = await bogbot.getInfo(pubkey)
-  sendBog(latest, id)
+  if (latest.image) {
+    const blob = await bogbot.find(latest.image)
+    sendBog(blob)
+  }
+  sendBog(latest)
 }
 
 export const connect = (server) => {
@@ -36,19 +40,39 @@ export const connect = (server) => {
 
 let queue = []
 
-const feeds = await bogbot.getFeeds()
-
-queue = queue.concat(feeds)
-
 console.log(queue)
+
+const loadFeedsIntoQueue = async () => {
+  const feeds = await bogbot.getFeeds()
+  queue = queue.concat(feeds)
+}
+
+loadFeedsIntoQueue()
+
+let num = 1
+let timeout = 10000 * num
+
+setInterval(() => {
+  timeout = 1000 * num++
+  console.log(timeout)
+  loadFeedsIntoQueue()
+}, timeout)
+
+const cleanUpQueue = async (hash) => {
+  for (let i = 0; i < queue.length; i++) {
+    if (queue[i] === hash) {
+      queue.pop(i)
+    } 
+  }
+}
 
 setInterval(async () => {
   if (queue.length) {
     console.log(queue)
     const peers = await bogRoom.getPeers()
     const keys = Object.keys(peers)
-    const peer = keys[Math.floor((Math.random() * keys.length))]
 
+    const peer = keys[Math.floor((Math.random() * keys.length))]
     const hash = queue[Math.floor((Math.random() * queue.length))]
 
     let cleanup = false
@@ -68,17 +92,13 @@ setInterval(async () => {
       }
     }
     if (cleanup) {
-      for (let i = 0; i < queue.length; i++) {
-        if (queue[i] === hash) {
-          queue.pop(i)
-        } 
-      }
-    }
-    if (!cleanup) {
-      sendBog(hash, peer)    
+      cleanUpQueue(hash)
+    } else {
+      sendBog(hash, peer)
+      cleanUpQueue(hash)
     }
   }
-}, 5000)
+}, 500)
 
 // ask random peers for messages one at a time, removing msg from queue if we get it
 export const gossip = async (msg) => {

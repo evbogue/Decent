@@ -40,16 +40,22 @@ export const render = async (msg) => {
     if (blob) {
       content.innerHTML = await markdown(blob)
     } else {
-      content.textContent = '[NO BLOB]'
+      content.textContent = '...'
       gossip(msg.data)
     }
   }
+
+  const ts = h('a', {href: '#' + msg.hash, classList: 'timestamp'}, [human(new Date(msg.timestamp))])
+
+  setInterval(() => {
+    ts.textContent = human(new Date(msg.timestamp))
+  }, 5000)
 
   const div = h('div', {classList: 'message'}, [
     h('a', {href: '#' + msg.author}, [img]),
     link,
     ' ',
-    h('a', {href: '#' + msg.hash, classList: 'timestamp'}, [human(new Date(msg.timestamp))]),
+    ts,
     content
   ])
 

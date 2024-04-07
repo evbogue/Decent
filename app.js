@@ -11,9 +11,7 @@ const server = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + lo
 
 connect(server)
 
-const screen = h('div', {id: 'screen'}, [
-  await prompter()
-])
+const screen = h('div', {id: 'screen'})
 
 const navbar = h('div', {id: 'navbar'}, [
   h('button', {onclick: () => {
@@ -36,6 +34,7 @@ const route = async () => {
   if (src.length === 43) {
     window.location.hash = src + '='
   }
+  screen.appendChild(await prompter(src))
   const scroller = h('div', {id: 'scroller'})
   screen.appendChild(scroller)
 
@@ -47,9 +46,9 @@ const route = async () => {
     if (log && log[0]) {
       for (const msg of log) {
         const got = document.getElementById(msg.hash)
-        const rendered = await render(msg)
 
         if (!got) {
+          const rendered = await render(msg)
           scroller.appendChild(rendered)
         }
       }
@@ -65,6 +64,10 @@ const route = async () => {
 }
 
 window.onhashchange = () => {
+  const promptdiv = document.getElementById('prompter')
+  if (promptdiv) {
+    promptdiv.remove()
+  }
   const scroller = document.getElementById('scroller')
   if (scroller) {
     scroller.remove()

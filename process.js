@@ -82,12 +82,7 @@ export const process = async (msg, id) => {
     await bogbot.add(opened.raw)
     if (msg.blob) {
       await bogbot.make(msg.blob)
-    }
-    if (msg.boxed) {
-      opened.text =  '🔒 '
-      opened.text = opened.text + (await unbox(msg.boxed) || '')
-    } else {
-      opened.text = msg.blob
+      opened.txt = msg.blob
     }
 
     const rendered = await render(opened)

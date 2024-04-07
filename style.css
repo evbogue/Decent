@@ -1,9 +1,9 @@
 body {
   margin: 0;
-  background: #313338;
+  background: #2d2d2d;
 }
 
-a {color: #06768d/*#007aa5*/; font-weight: bold; text-decoration: none;}
+a {color: #06768d; font-weight: bold; text-decoration: none;}
 
 a.timestamp {color: #777; font-weight: normal;}
 
@@ -14,8 +14,10 @@ p { margin: 0;}
 }
 
 .message:hover {
-  background: #2b2d31;
+  background: #222;
 }
+
+#preview {background: #222;}
 
 .reply {
   margin-left: 1em;
@@ -25,7 +27,7 @@ p { margin: 0;}
   border-left: 2px solid #555; padding-left: .5em;
 }
 
-.avatar { width: 32px; height: 32px; border-radius: 100%; float: left; margin-right: 5px; margin-top: 5px; object-fit: cover;}
+.avatar { width: 28px; height: 29px; border-radius: 10%; float: left; margin-right: 5px; margin-top: 5px; object-fit: cover;}
 
 .avatarbig { width: 150px; height: 150px; object-fit: cover; border-radius: 100%;}
 
@@ -38,20 +40,19 @@ p { margin: 0;}
   margin-bottom: 46px;
 }
 
-button { border: none; background: #232428; padding: 10px; margin-right: 5px; color: #ccc;}
+button { border: none; background: #2d2d2d; padding: 10px; margin-right: 5px; color: #ccc;}
 
-button:hover {background: #2b2d31; cursor: pointer;}
+button:hover {background: #222; cursor: pointer;}
 
 #navbar {
   position: fixed; top: 0; width: 100%;
-  background: #232428;
+  background: #222;
 }
 
 #prompt {
-  position: fixed; bottom: 0; width: 100%;
+  position: fixed; bottom: 1px; width: 99%;
 }
 
-input, textarea { width: 100%; border: 1px solid #232428; background: #383a40; font-family: 'Source Sans Pro'; color: #f5f5f5; padding: 10px; font-size: 1em;}
-
+input, textarea { width: 100%; border: 1px solid #444; background: #222; font-family: 'Source Sans Pro'; color: #f5f5f5; padding: 10px; font-size: 1em;}
 
 input:focus { outline: none; border: 1px solid #666;}
