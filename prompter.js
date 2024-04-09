@@ -87,18 +87,20 @@ export const prompter = async (hash) => {
           content
         ])
       ])
+
       const get = document.getElementById('preview')
-      if (get) {get.remove()}
-      if (hash) {
+      if (get) {
+        get.replaceWith(preview)
+      }
+      if (hash && !get) {
         preview.classList = 'reply'
         const parentMsg = document.getElementById(hash)
         if (parentMsg) {
           parentMsg.appendChild(preview)
         }
-      } else {
+      } else if (!get) {
         const scroller = document.getElementById('scroller')
         scroller.appendChild(preview)
-
       }
       window.scrollTo(0, document.body.scrollHeight)
     },
