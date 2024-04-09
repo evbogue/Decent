@@ -97,12 +97,13 @@ export const prompter = async (hash) => {
         const parentMsg = document.getElementById(hash)
         if (parentMsg) {
           parentMsg.appendChild(preview)
+          window.scrollTo(0, document.body.scrollHeight)
         }
       } else if (!get) {
         const scroller = document.getElementById('scroller')
         scroller.appendChild(preview)
+        window.scrollTo(0, document.body.scrollHeight)
       }
-      window.scrollTo(0, document.body.scrollHeight)
     },
     onkeyup: async (e) => {
       if (e.key == 'Enter' && input.value) {
