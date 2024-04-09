@@ -136,7 +136,7 @@ export const startVideo = async (id) => {
   const selfcard = h('div', {id: selfId}, [
     h('video', {
       autoplay: true, 
-      style: 'transform: rotateY(180deg); height: auto; width: 150px; object-fit: cover;', 
+      style: 'transform: rotateY(180deg); height: 150px; width: 150px; object-fit: cover;', 
       muted: true, 
       srcObject: selfStream
     })
@@ -151,7 +151,7 @@ bogRoom.onPeerStream((stream, id) => {
   const video = h('video', {
     autoplay: true,
     srcObject: stream, 
-    style: 'height: auto; width: 150px; object-fit: cover;'   
+    style: 'height: 150px; width: 150px; object-fit: cover;'   
   })
 
   const get = document.getElementById(id)
