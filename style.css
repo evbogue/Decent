@@ -51,7 +51,7 @@ button:hover {background: #2d2d2d; cursor: pointer;}
 }
 
 #prompt {
-  position: fixed; bottom: 1px; width: 99%;
+  position: fixed; bottom: 1px; width: 99%; z-index: 1000;
 }
 
 input, textarea { width: 100%; border: 1px solid #444; background: #222; font-family: 'Source Sans Pro'; color: #f5f5f5; padding: 10px; font-size: 1em;}

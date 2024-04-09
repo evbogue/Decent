@@ -112,7 +112,7 @@ export const prompter = async (hash) => {
   })
 
   const publishButton = h('span', {
-    style: 'position: fixed; bottom: 7px; right: 15px; font-size: 22px; cursor: pointer;', 
+    style: 'position: fixed; bottom: 7px; right: 15px; font-size: 22px; cursor: pointer; z-index: 2000;', 
     onclick: () => {
     if (input.value) {
       publish(input, context, hash)
