@@ -1,10 +1,10 @@
 import {h} from './lib/h.js'
 import {bogbot} from './bogbot.js' 
 import {prompter} from './prompter.js'
-import {render, avatar} from './render.js'
+import {avatar} from './render.js'
 import {settings} from './settings.js'
 import {connect, gossip} from './connect.js'
-
+import {adder} from './adder.js'
 
 if (!window.location.hash) { window.location = '#' }
 
@@ -50,21 +50,14 @@ const route = async () => {
     const log = await bogbot.query(src)
 
     if (log && log[0]) {
-      for (const msg of log) {
-        const got = document.getElementById(msg.hash)
-
-        if (!got) {
-          const rendered = await render(msg)
-          scroller.appendChild(rendered)
-        }
-      }
+      adder(log, src, scroller)
     } else if (src.length === 44) {
       gossip(src)
     }
 
     setTimeout(() => {
       window.scrollTo(0, document.body.scrollHeight)
-    }, 50)
+    }, 500)
 
   }
 }
