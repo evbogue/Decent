@@ -1,8 +1,8 @@
 import { h } from './lib/h.js'
 import { bogbot } from './bogbot.js'
-import { render } from './render.js'
+import { render, avatar } from './render.js'
 import { markdown } from './markdown.js'
-import { directSend } from './connect.js'
+import { directSend, startVideo } from './connect.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
@@ -80,6 +80,15 @@ export const process = async (msg, id) => {
       }
       
       await bogbot.saveInfo(opened.author, msg)
+      if (id) {
+        const onlineId = document.getElementById(id)
+        const newOnlineId = h('div', {id}, [await avatar(opened.author), h('div', {style: 'cursor: pointer;',
+          onclick: () => {
+            startVideo(id) 
+          }
+        }, ['📺'])])
+        onlineId.replaceWith(newOnlineId)
+      }
     }
 
     await bogbot.add(opened.raw)

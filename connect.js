@@ -1,12 +1,12 @@
 import { process } from './process.js'
 import { bogbot } from './bogbot.js'
-import { joinRoom } from './lib/trystero-torrent.min.js'
+import { joinRoom, selfId } from './lib/trystero-torrent.min.js'
 import { h } from './lib/h.js'
 
 const pubkey = await bogbot.pubkey()
 
-const bogRoom = joinRoom({appId: 'bogbooktestnet', password: 'password'}, 'trystero')
-//const bogRoom = joinRoom({appId: 'bogbookv4public', password: 'password'}, 'trystero')
+//const bogRoom = joinRoom({appId: 'bogbooktestnet', password: 'password'}, 'trystero')
+const bogRoom = joinRoom({appId: 'bogbookv4public', password: 'password'}, 'trystero')
 
 const [ sendBog, onBog ] = bogRoom.makeAction('message')
 
@@ -29,11 +29,18 @@ export const sendLatest = async () => {
 
 export const connect = (server) => {
   bogRoom.onPeerJoin(async (id) => {
+    const online = document.getElementById('online')
+    const alreadyConnected = document.getElementById(id)
+    if (!alreadyConnected) {
+      online.appendChild(h('div', {id}))
+    }
     await sendLatest(id)
     console.log('joined ' + id)
   })
 
   bogRoom.onPeerLeave(id => {
+    const got = document.getElementById(id)
+    if (got) { got.remove()}
     console.log('left ' + id)
   })
 }
@@ -117,3 +124,37 @@ export const blast = async (msg) => {
     console.log('ONLY SEND HASHES AND PUBKEYS TO BLAST PLEASE')
   }
 }
+
+export const startVideo = async (id) => {
+  const online = document.getElementById('online')
+
+  const selfStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true
+  })
+
+  const selfcard = h('div', {id: selfId}, [
+    h('video', {
+      autoplay: true, 
+      style: 'transform: rotateY(180deg); height: auto; width: 150px; object-fit: cover;', 
+      muted: true, 
+      srcObject: selfStream
+    })
+  ])
+  online.appendChild(selfcard)  
+  
+  bogRoom.addStream(selfStream, id)
+}
+
+bogRoom.onPeerStream((stream, id) => {
+  console.log('ADDING VIDEO FOR ' + id)
+  const video = h('video', {
+    autoplay: true,
+    srcObject: stream, 
+    style: 'height: auto; width: 150px; object-fit: cover;'   
+  })
+
+  const get = document.getElementById(id)
+  get.appendChild(video)
+
+})

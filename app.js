@@ -14,6 +14,10 @@ connect(server)
 
 const screen = h('div', {id: 'screen'})
 
+const online = h('div', {id: 'online'}, ['Online:'])
+
+screen.appendChild(online)
+
 const navbar = h('div', {id: 'navbar'}, [
   await avatar(await bogbot.pubkey()),
   h('button', {onclick: () => {
