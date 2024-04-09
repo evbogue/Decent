@@ -6,14 +6,14 @@ import { decode } from './lib/base64.js'
 import { markdown } from './markdown.js'
 import { gossip } from './connect.js'
 
-export const render = async (msg) => {
-  const wrapperDiv = h('div', {id: msg.hash})
-  const img = vb(decode(msg.author), 256)
-  const link = h('a', {href: '#' + msg.author, classList: 'name' + msg.author}, [msg.author.substring(0, 10)])
+export const avatar = async (id) => {
+  const img = vb(decode(id), 256)
 
-  img.classList = 'avatar image' + msg.author
+  img.classList = 'avatar image' + id
 
-  const latest = await bogbot.getInfo(msg.author)
+  const link = h('a', {href: '#' + id, classList: 'name' + id}, [id.substring(0, 7) + '...'])
+
+  const latest = await bogbot.getInfo(id)
 
   if (latest.name) {
     link.textContent = latest.name
@@ -25,14 +25,34 @@ export const render = async (msg) => {
       img.src = latest.image
     } if (latest.image.length === 44) {
       const blob = await bogbot.find(latest.image)
-      img.src = blob
+      if (blob) {
+        img.src = blob
+      }
       if (!blob) {
         gossip(latest.image)
+        setTimeout(async () => { 
+          const newblob = await bogbot.find(latest.image)
+          img.src = newblob
+        }, 500)
       }
     }
   }
 
-  const content = h('div', {id: msg.data})
+  const span = h('span', [
+    img,
+    ' ',
+    link,
+  ])
+
+
+  return span
+}
+
+export const render = async (msg) => {
+  const wrapperDiv = h('span', {id: msg.hash})
+
+  const content = h('span', ['...'])
+
   if (msg.txt) {
     content.innerHTML = await markdown(msg.txt)
   } if (!msg.txt) {
@@ -40,8 +60,13 @@ export const render = async (msg) => {
     if (blob) {
       content.innerHTML = await markdown(blob)
     } else {
-      content.textContent = '...'
       gossip(msg.data)
+      setTimeout(async () => {
+        const newblob = await bogbot.find(msg.data)
+        if (newblob) {
+          content.innerHTML = await markdown(newblob)
+        }
+      }, 500)
     }
   }
 
@@ -52,10 +77,10 @@ export const render = async (msg) => {
   }, 5000)
 
   const div = h('div', {classList: 'message'}, [
-    h('a', {href: '#' + msg.author}, [img]),
-    link,
+    await avatar(msg.author),
     ' ',
     ts,
+    ' ',
     content
   ])
 

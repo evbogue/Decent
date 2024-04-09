@@ -1,9 +1,10 @@
 import {h} from './lib/h.js'
 import {bogbot} from './bogbot.js' 
 import {prompter} from './prompter.js'
-import {render} from './render.js'
+import {render, avatar} from './render.js'
 import {settings} from './settings.js'
 import {connect, gossip} from './connect.js'
+
 
 if (!window.location.hash) { window.location = '#' }
 
@@ -14,6 +15,7 @@ connect(server)
 const screen = h('div', {id: 'screen'})
 
 const navbar = h('div', {id: 'navbar'}, [
+  await avatar(await bogbot.pubkey()),
   h('button', {onclick: () => {
     window.location.hash = '#'
     window.scrollTo(0, document.body.scrollHeight)

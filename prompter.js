@@ -8,6 +8,33 @@ import { markdown } from './markdown.js'
 
 const pubkey = await bogbot.pubkey()
 
+const publish = async (input, context, hash) => {
+  const get = document.getElementById('preview')
+  if(get) {
+    get.remove()
+  }
+  const published = await bogbot.publish(context + input.value)
+  const opened = await bogbot.open(published)
+  const rendered = await render(opened)
+  if (hash) {
+    console.log('FIND HASH')
+    const parentMsg = document.getElementById(hash)
+    parentMsg.appendChild(h('div', {classList: 'reply'}, [rendered]))
+  } else {
+    scroller.appendChild(rendered)
+  }
+  const latest = await bogbot.getInfo(pubkey)
+  latest.type = 'latest'
+  latest.payload = opened.raw
+  latest.blob = context + input.value
+  bogbot.add(opened.raw)
+  await bogbot.saveInfo(pubkey, latest)
+  await sendLatest()
+  input.value = ''
+  window.scrollTo(0, document.body.scrollHeight)
+ 
+}
+
 export const prompter = async (hash) => {
   let context = ''
   if (hash) { 
@@ -49,7 +76,7 @@ export const prompter = async (hash) => {
 
       const content = h('div')
 
-      content.innerHTML = await markdown(context + ' ' + input.value)
+      content.innerHTML = await markdown(context + input.value)
 
       const preview = h('div', {id: 'preview'}, [
         h('div', {classList: 'message'}, [
@@ -77,35 +104,24 @@ export const prompter = async (hash) => {
     },
     onkeyup: async (e) => {
       if (e.key == 'Enter' && input.value) {
-        const get = document.getElementById('preview')
-        get.remove()
-        const published = await bogbot.publish(context + ' ' +input.value)
-        input.value = ''
-        const opened = await bogbot.open(published)
-        const rendered = await render(opened)
-        if (hash) {
-          console.log('FIND HASH')
-          const parentMsg = document.getElementById(hash)
-          parentMsg.appendChild(h('div', {classList: 'reply'}, [rendered]))
-        } else {
-          scroller.appendChild(rendered)
-        }
-        const latest = await bogbot.getInfo(pubkey)
-        latest.type = 'latest'
-        latest.payload = opened.raw
-        bogbot.add(opened.raw)
-        await bogbot.saveInfo(pubkey, latest)
-        await sendLatest()
-        window.scrollTo(0, document.body.scrollHeight)
+        await publish(input, context, hash)
       }
-    }
+    } 
   })
 
+  const publishButton = h('span', {
+    style: 'position: fixed; bottom: 7px; right: 15px; font-size: 22px; cursor: pointer;', 
+    onclick: () => {
+    if (input.value) {
+      publish(input, context, hash)
+    }
+  }}, ['📨'])
 
-  const div = h('div', {id: 'prompt'}, [input])
+  const div = h('div', {id: 'prompt'}, [input, publishButton])
 
   return div
 }
+
 
 window.onload = () => {
   const input = document.getElementById('prompter').focus()

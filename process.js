@@ -6,6 +6,7 @@ import { directSend } from './connect.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
+  console.log(msg)
   if (msg.length === 44 && !msg.startsWith('{')) {
     const blob = await bogbot.find(msg)
 
