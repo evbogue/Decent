@@ -97,22 +97,18 @@ export const process = async (msg, id) => {
       opened.txt = msg.blob
     }
 
-    const rendered = await render(opened)
-
     const alreadyRendered = document.getElementById(opened.hash)
-
     const src = window.location.hash.substring(1)
-
     const shouldWeRender = (src === opened.author || src === opened.hash || src === '')
 
-
-
     if (shouldWeRender && !alreadyRendered && msg.type === 'latest') {
+      const rendered = await render(opened)
       scroller.appendChild(rendered)
       setTimeout(() => {
         window.scrollTo(0, document.body.scrollHeight)
       }, 50)
     } else if (shouldWeRender && !alreadyRendered) {
+      const rendered = await render(opened)
       scroller.firstChild.before(rendered)
     }
   }
