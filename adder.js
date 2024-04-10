@@ -29,8 +29,7 @@ export const adder = (log, src, div) => {
       }
     }
 
-    const topChecker = setInterval(_ => {
-      console.log(posts)
+    const topChecker = setInterval(() => {
       if (!posts.length) { clearInterval(topChecker)}
       else if ((window.scrollX + window.scrollY == 0) && window.location.hash.substring(1) === src) {
         posts = reverse.slice(index, index + 25)
