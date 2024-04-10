@@ -14,7 +14,7 @@ connect(server)
 
 const screen = h('div', {id: 'screen'})
 
-const online = h('div', {id: 'online'}, ['Online:'])
+const online = h('div', {id: 'online'})
 
 screen.appendChild(online)
 
@@ -40,8 +40,9 @@ const route = async () => {
   if (src.length === 43) {
     window.location.hash = src + '='
   }
-  screen.appendChild(await prompter(src))
   const scroller = h('div', {id: 'scroller'})
+
+  scroller.appendChild(await prompter(src))
   screen.appendChild(scroller)
 
   if (src === 'settings') { 
@@ -58,19 +59,12 @@ const route = async () => {
     setTimeout(() => {
       window.scrollTo(0, document.body.scrollHeight)
     }, 500)
-
   }
 }
 
 window.onhashchange = () => {
-  const promptdiv = document.getElementById('prompter')
-  if (promptdiv) {
-    promptdiv.remove()
-  }
   const scroller = document.getElementById('scroller')
-  if (scroller) {
-    scroller.remove()
-  }
+  scroller.remove()
   route() 
 }
 
