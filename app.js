@@ -58,7 +58,7 @@ const route = async () => {
 
     setTimeout(() => {
       window.scrollTo(0, document.body.scrollHeight)
-    }, 500)
+    }, 1000)
   }
 }
 
