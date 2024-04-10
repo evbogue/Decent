@@ -29,8 +29,10 @@ export const adder = (log, src, div) => {
       }
     }
 
-    setInterval(_ => {
-      if ((window.scrollX + window.scrollY == 0) && window.location.hash.substring(1) === src) {
+    const topChecker = setInterval(_ => {
+      console.log(posts)
+      if (!posts.length) { clearInterval(topChecker)}
+      else if ((window.scrollX + window.scrollY == 0) && window.location.hash.substring(1) === src) {
         posts = reverse.slice(index, index + 25)
         index = index + 25
         addPosts(posts, div)
