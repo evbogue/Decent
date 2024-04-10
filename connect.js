@@ -125,7 +125,7 @@ export const blast = async (msg) => {
   }
 }
 
-export const startVideo = async (id) => {
+/*export const startVideo = async (id) => {
   const online = document.getElementById('online')
 
   const selfStream = await navigator.mediaDevices.getUserMedia({
@@ -157,4 +157,4 @@ bogRoom.onPeerStream((stream, id) => {
   const get = document.getElementById(id)
   get.appendChild(video)
 
-})
+})*/
