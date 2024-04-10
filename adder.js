@@ -22,12 +22,20 @@ export const adder = (log, src, div) => {
     index = index + 25
 
     window.onscroll = () => {
-      if (((window.innerHeight + window.scrollY) == 0) && window.location.hash.substring(1) === src) {
+      if ((window.scrollX + window.scrollY == 0) && window.location.hash.substring(1) === src) {
         posts = reverse.slice(index, index + 25)
         index = index + 25
         addPosts(posts, div)
       }
     }
+
+    setInterval(_ => {
+      if ((window.scrollX + window.scrollY == 0) && window.location.hash.substring(1) === src) {
+        posts = reverse.slice(index, index + 25)
+        index = index + 25
+        addPosts(posts, div)
+      }
+    }, 1000)
   }
 }
 
