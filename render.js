@@ -49,9 +49,9 @@ export const avatar = async (id) => {
 }
 
 export const render = async (msg) => {
-  const wrapperDiv = h('span', {id: msg.hash})
+  const wrapperDiv = h('div', {id: msg.hash})
 
-  const content = h('span', ['...'])
+  const content = h('div', ['...'])
 
   if (msg.txt) {
     content.innerHTML = await markdown(msg.txt)
