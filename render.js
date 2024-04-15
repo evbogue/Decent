@@ -4,7 +4,7 @@ import {bogbot} from './bogbot.js'
 import {vb} from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { markdown } from './markdown.js'
-import { gossip } from './connect.js'
+import { gossip, blast } from './connect.js'
 
 export const avatar = async (id) => {
   const img = vb(decode(id), 256)
@@ -15,27 +15,36 @@ export const avatar = async (id) => {
 
   const latest = await bogbot.getInfo(id)
 
+  console.log(latest)
+
   if (latest.name) {
     link.textContent = latest.name
   }
 
   if (latest.image) {
-    if (latest.image.length > 44) {
-
-      img.src = latest.image
-    } if (latest.image.length === 44) {
+    if (latest.image.length === 44) {
+      console.log(latest.image)
       const blob = await bogbot.find(latest.image)
-      if (blob) {
+      if (blob && blob != undefined) {
+        console.log(blob)
         img.src = blob
       }
-      if (!blob) {
+      if (!blob && blob == undefined) {
+        console.log('gossip:' + latest.image)
         gossip(latest.image)
         setTimeout(async () => { 
           const newblob = await bogbot.find(latest.image)
-          img.src = newblob
+          if (newblob) {
+            img.src = newblob
+          }
         }, 500)
       }
     }
+
+    //if (latest.image.length > 44) {
+    //  const blob = await bogbot.make(latest.image)
+    //  img.src = blob
+    //}
   }
 
   const span = h('span', [
