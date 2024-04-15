@@ -28,7 +28,8 @@ const navbar = h('div', {id: 'navbar'}, [
     onclick: () => {
       window.location.hash = '#settings'
     }
-  }, ['Settings'])
+  }, ['Settings']),
+  h('a', {href: 'https://github.com/evbogue/decent'}, [h('button', ['Git'])])
 ])
 
 screen.appendChild(navbar)
