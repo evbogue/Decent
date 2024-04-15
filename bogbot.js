@@ -105,6 +105,8 @@ if (file) {
 
 const sorter = setInterval(async () => {
   if (newData) {
+    console.log(newData)
+    console.log('sorting')
     const rawset = new Set()
     for await (const msg of arraystore) {
       rawset.add(msg.raw) 
@@ -119,12 +121,13 @@ const sorter = setInterval(async () => {
       newarray.push(opened)
     }
     
-    newarray.sort((a,b) => a.timestamp - b.timestamp)
+    await newarray.sort((a,b) => a.timestamp - b.timestamp)
     arraystore = newarray
-    save()
+    await save()
     newData = false
+    console.log(newData)
   } 
-}, 1000)
+}, 10000)
 
 bogbot.query = async (query) => {
   if (arraystore[0] && !query) { return arraystore }
@@ -159,9 +162,9 @@ bogbot.getFeeds = async () => {
   return feeds
 }
 
-function save () {
+const save = async function () {
   const stringedarray = JSON.stringify(arraystore)
-  cachekv.put('arraystore', stringedarray)
+  await cachekv.put('arraystore', stringedarray)
 }
 
 bogbot.add = async (msg) => {
