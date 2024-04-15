@@ -45,7 +45,7 @@ export const connect = (server) => {
   })
 }
 
-let queue = []
+export let queue = []
 
 const loadFeedsIntoQueue = async () => {
   const feeds = await bogbot.getFeeds()
@@ -54,22 +54,6 @@ const loadFeedsIntoQueue = async () => {
 
 loadFeedsIntoQueue()
 
-let num = 1
-let timeout = 10000 * num
-
-setInterval(() => {
-  timeout = 1000 * num++
-  loadFeedsIntoQueue()
-}, timeout)
-
-const cleanUpQueue = async (hash) => {
-  for (let i = 0; i < queue.length; i++) {
-    if (queue[i] === hash) {
-      queue.pop(i)
-    } 
-  }
-}
-
 setInterval(async () => {
   if (queue.length) {
     const peers = await bogRoom.getPeers()
@@ -77,33 +61,12 @@ setInterval(async () => {
 
     const peer = keys[Math.floor((Math.random() * keys.length))]
     const hash = queue[Math.floor((Math.random() * queue.length))]
-
-    let cleanup = false
-
-    const blob = await bogbot.find(hash)
-
-    const isObj = (blob && blob.startsWith('{'))
-
-    if (blob && !isObj) {
-      cleanup = true
-    }
-
-    const query = await bogbot.query(hash)
-    if (query && query[0]) {
-      if (query[0].hash === hash) {
-        cleanup = true
-      }
-    }
-    if (cleanup) {
-      cleanUpQueue(hash)
-    } else {
-      sendBog(hash, peer)
-      cleanUpQueue(hash)
-    }
+    //console.log(queue)
+    sendBog(hash, peer)
   }
-}, 50)
+}, 500)
 
-// ask random peers for messages one at a time, removing msg from queue if we get it
+// ask random peers for messages one at a time, removing msg from queue over in process.js if we get it
 export const gossip = async (msg) => {
   if (msg.length === 44) {
     queue.push(msg)
@@ -125,36 +88,3 @@ export const blast = async (msg) => {
   }
 }
 
-/*export const startVideo = async (id) => {
-  const online = document.getElementById('online')
-
-  const selfStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: true
-  })
-
-  const selfcard = h('div', {id: selfId}, [
-    h('video', {
-      autoplay: true, 
-      style: 'transform: rotateY(180deg); height: 150px; width: 150px; object-fit: cover;', 
-      muted: true, 
-      srcObject: selfStream
-    })
-  ])
-  online.appendChild(selfcard)  
-  
-  bogRoom.addStream(selfStream, id)
-}
-
-bogRoom.onPeerStream((stream, id) => {
-  console.log('ADDING VIDEO FOR ' + id)
-  const video = h('video', {
-    autoplay: true,
-    srcObject: stream, 
-    style: 'height: 150px; width: 150px; object-fit: cover;'   
-  })
-
-  const get = document.getElementById(id)
-  get.appendChild(video)
-
-})*/

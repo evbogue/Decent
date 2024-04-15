@@ -2,7 +2,7 @@ import { h } from './lib/h.js'
 import { bogbot } from './bogbot.js'
 import { render, avatar } from './render.js'
 import { markdown } from './markdown.js'
-import { directSend } from './connect.js'
+import { directSend, queue } from './connect.js'
 
 export const process = async (msg, id) => {
   const scroller = document.getElementById('scroller')
@@ -25,10 +25,18 @@ export const process = async (msg, id) => {
       }
       directSend(obj, id)
     }
+
+    // lets also get the latest and send that around, comparing timestamps to iterate to the latest if the user is not present
   }
 
   if (msg.type === 'blob') {
     const hash = await bogbot.make(msg.payload)
+    queue.forEach(msghash => {
+      if (msghash === hash) {
+        console.log('REMOVING ' + hash + ' FROM QUEUE')
+        queue.pop(msghash)
+      }
+    })
     const blobDiv = document.getElementById(hash)
     if (blobDiv) {
       console.log(blobDiv)
@@ -40,10 +48,16 @@ export const process = async (msg, id) => {
     
     if (msg.type === 'latest') {
       if (msg.blob) {
-        await bogbot.make(msg.blob)
+        const hash = await bogbot.make(msg.blob)
+        queue.forEach(msghash => {
+          if (msghash === hash) {
+            console.log('REMOVING ' + hash + ' FROM QUEUE')
+            queue.pop(msghash)
+          }
+        })
       }
       const latest = await bogbot.getInfo(opened.author)
-
+      // HERE WE NEED TO COMPARE IF OUR LATEST IS NEWER THAN THEIR LATEST
       if (msg.name) {
         if (latest.name != msg.name) {
           latest.name = msg.name
@@ -96,6 +110,13 @@ export const process = async (msg, id) => {
       await bogbot.make(msg.blob)
       opened.txt = msg.blob
     }
+
+    queue.forEach(msghash => {
+      if (msghash === opened.hash) {
+        console.log('REMOVING ' + opened.hash + ' FROM QUEUE')
+        queue.pop(msghash)
+      }
+    })
 
     const alreadyRendered = document.getElementById(opened.hash)
     const src = window.location.hash.substring(1)

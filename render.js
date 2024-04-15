@@ -15,18 +15,14 @@ export const avatar = async (id) => {
 
   const latest = await bogbot.getInfo(id)
 
-  console.log(latest)
-
   if (latest.name) {
     link.textContent = latest.name
   }
 
   if (latest.image) {
     if (latest.image.length === 44) {
-      console.log(latest.image)
       const blob = await bogbot.find(latest.image)
       if (blob && blob != undefined) {
-        console.log(blob)
         img.src = blob
       }
       if (!blob && blob == undefined) {
@@ -112,7 +108,7 @@ export const render = async (msg) => {
   if (msg.previous != msg.hash) {
     const prev = await bogbot.query(msg.previous)
     if (prev && !prev[0]) {
-      console.log('ASK FOR PREVIOUS')
+      console.log('gossip:' + msg.previous)
       gossip(msg.previous)
     }
   }
