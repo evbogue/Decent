@@ -4,7 +4,7 @@ import {bogbot} from './bogbot.js'
 import {vb} from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { markdown } from './markdown.js'
-import { gossip, blast } from './connect.js'
+import { gossip } from './gossip.js'
 
 export const avatar = async (id) => {
   const img = vb(decode(id), 256)

@@ -1,90 +1,74 @@
 import { process } from './process.js'
 import { bogbot } from './bogbot.js'
-import { joinRoom, selfId } from './lib/trystero-torrent.min.js'
+import { addSocket, rmSocket} from './gossip.js'
+import { trystero } from './trystero.js'
 import { h } from './lib/h.js'
 
 const pubkey = await bogbot.pubkey()
 
-//const bogRoom = joinRoom({appId: 'bogbooktestnet', password: 'password'}, 'trystero')
-const bogRoom = joinRoom({appId: 'bogbookv4public', password: 'password'}, 'trystero')
+export const connect = (s) => {
+  trystero.connect({appId: 'bogbookv4public', password: 'password'})
 
-const [ sendBog, onBog ] = bogRoom.makeAction('message')
-
-onBog((data, id) => {
-  process(data, id)
-})
-
-export const directSend = (obj, id) => {
-  sendBog(obj, id)
-}
-
-export const sendLatest = async () => {
-  const latest = await bogbot.getInfo(pubkey)
-  if (latest.image) {
-    const blob = await bogbot.find(latest.image)
-    sendBog(blob)
-  }
-  sendBog(latest)
-}
-
-export const connect = (server) => {
-  bogRoom.onPeerJoin(async (id) => {
-    const online = document.getElementById('online')
-    const alreadyConnected = document.getElementById(id)
-    if (!alreadyConnected) {
-      online.appendChild(h('div', {id}))
-    }
-    await sendLatest(id)
-    console.log('joined ' + id)
+  trystero.onmessage(async (data, id) => {
+    await process(data, id)
   })
 
-  bogRoom.onPeerLeave(id => {
+  trystero.join(async (id) => {
+    const online = document.getElementById('online')
+    const latest = await bogbot.getInfo(pubkey)
+    trystero.send(latest)
+    console.log('joined ' + id)
+    const contact = h('span', {id})
+    online.appendChild(contact)
+    const feeds = await bogbot.getFeeds()
+    feeds.forEach(feed => {
+      if (feed != pubkey) {
+        trystero.send(feed)
+      }
+    })
+  })
+
+  trystero.leave(id => {
     const got = document.getElementById(id)
-    if (got) { got.remove()}
+    got.remove()
     console.log('left ' + id)
   })
-}
 
-export let queue = []
+  const ws = new WebSocket(s)
+  //ws.binaryType = 'arraybuffer'
 
-const loadFeedsIntoQueue = async () => {
-  const feeds = await bogbot.getFeeds()
-  queue = queue.concat(feeds)
-}
-
-loadFeedsIntoQueue()
-
-setInterval(async () => {
-  if (queue.length) {
-    const peers = await bogRoom.getPeers()
-    const keys = Object.keys(peers)
-
-    const peer = keys[Math.floor((Math.random() * keys.length))]
-    const hash = queue[Math.floor((Math.random() * queue.length))]
-    //console.log(queue)
-    sendBog(hash, peer)
+  ws.onopen = async () => {
+    const latest = await bogbot.getInfo(pubkey)
+    console.log(latest)
+    addSocket(ws)
+    ws.send(pubkey)
+    ws.send(JSON.stringify(latest))
+    const feeds = await bogbot.getFeeds()
+    feeds.forEach(feed => {
+      if (feed != pubkey) {
+        ws.send(feed)
+      }
+    })
   }
-}, 500)
 
-// ask random peers for messages one at a time, removing msg from queue over in process.js if we get it
-export const gossip = async (msg) => {
-  if (msg.length === 44) {
-    queue.push(msg)
-  } else {
-    console.log('ONLY SEND HASHES AND PUBKEYS TO GOSSIP PLEASE')
-    console.log(msg)
+  ws.onmessage = async (e) => {
+    await process(e.data)
   }
-}
 
-// sends to all peers
-export const blast = async (msg) => {
-  if (msg.length === 44) {
-    const msg = await bogbot.query(msg)
-    if (msg && msg[0]) {
-      sendBog(msg[0])
-    } 
-  } else {
-    console.log('ONLY SEND HASHES AND PUBKEYS TO BLAST PLEASE')
+  ws.onclose = (e) => {
+    rmSocket(ws)
+    setTimeout(function () {
+      connect(s)
+    }, 1000)
+  }
+
+  let retryCount = 1
+
+  ws.onerror = (err) => {
+    setTimeout(() => {
+      ws.close()
+      rmSocket(ws)
+      retryCount++
+    }, 10000 * retryCount)
   }
 }
-

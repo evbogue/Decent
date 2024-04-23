@@ -1,10 +1,10 @@
 import {h} from './lib/h.js'
 import {bogbot} from './bogbot.js'
 import { render } from './render.js'
-import { sendLatest } from './connect.js'
 import {vb} from './lib/vb.js'
 import { decode } from './lib/base64.js'
 import { markdown } from './markdown.js'
+import { gossip } from './gossip.js'
 
 const pubkey = await bogbot.pubkey()
 
@@ -29,7 +29,7 @@ const publish = async (input, context, hash) => {
   latest.blob = context + input.value
   bogbot.add(opened.raw)
   await bogbot.saveInfo(pubkey, latest)
-  await sendLatest()
+  gossip(latest)
   input.value = ''
   window.scrollTo(0, document.body.scrollHeight)
  

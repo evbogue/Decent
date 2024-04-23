@@ -3,8 +3,9 @@ import {bogbot} from './bogbot.js'
 import {prompter} from './prompter.js'
 import {avatar} from './render.js'
 import {settings} from './settings.js'
-import {connect, gossip} from './connect.js'
+import {connect} from './connect.js'
 import {adder} from './adder.js'
+import {gossip} from './gossip.js'
 
 if (!window.location.hash) { window.location = '#' }
 

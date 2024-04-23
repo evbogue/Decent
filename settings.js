@@ -1,24 +1,24 @@
 import { h } from './lib/h.js'
+import { cachekv } from './lib/cachekv.js'
 import { bogbot } from './bogbot.js'
 import { decode } from './lib/base64.js'
 import { vb } from './lib/vb.js'
-import { cachekv} from './lib/cachekv.js'
-import { sendLatest, directSend } from './connect.js'
+import { gossip } from './gossip.js'
 
 const keypair = await bogbot.keypair()
 const pubkey = await bogbot.pubkey()
+let latest = await bogbot.getInfo(pubkey)
 
-const latestish = await bogbot.getInfo(pubkey)
-const input = h('input', {placeholder: (latestish.name) || pubkey})
+const input = h('input', {placeholder: latest.name || pubkey})
 
 const saveName = h('button', {
   onclick: async () => {
     if (input.value) {
-      const latest = await bogbot.getInfo(pubkey)
+      latest = await bogbot.getInfo(pubkey)
       latest.name = input.value
       input.placeholder = input.value
       await bogbot.saveInfo(pubkey, latest)
-      await sendLatest()
+      gossip(latest)
       const namesOnScreen = document.getElementsByClassName('name' + pubkey)
       for (const names of namesOnScreen) {
         names.textContent = input.value
@@ -35,21 +35,21 @@ const uploadButton = h('button', {
 }, ['Upload profile photo'])
 
 const uploader = h('input', {
-  type: 'file', style: 'display: none;', onchange: async (e) => {
+  type: 'file', style: 'display: none;', onchange: (e) => {
     const file = e.srcElement.files[0]
     const reader = new FileReader()
     reader.onloadend = async () => {
-      const latest = await bogbot.getInfo(pubkey)
+      latest = await bogbot.getInfo(pubkey) 
       img.src = await reader.result
       const imagesOnScreen = document.getElementsByClassName('image' + pubkey)
       for (const image of imagesOnScreen) {
         image.src = img.src
       }
       const blob = await bogbot.make(img.src)
-      await directSend({type: 'blob', payload: blob})
       latest.image = blob
+      gossip(img.src)
+      gossip(latest)
       await bogbot.saveInfo(pubkey, latest)
-      await sendLatest()
     }
     reader.readAsDataURL(file)
 }})
@@ -58,8 +58,9 @@ const img = vb(decode(pubkey), 256)
 
 img.classList = 'avatarbig image' + pubkey
 
-if (latestish.image) {
-  img.src = latestish.image
+if (latest.image) {
+  const blob = await bogbot.find(latest.image)
+  img.src = blob
 }
 
 const textarea = h('textarea', [keypair])
